@@ -6,14 +6,21 @@ const opDivide = (a, b) => Number(a) / Number(b);
 
 const hasDigits = (string) => /\d/.test(string);
 
-const clamp = (num_string) => {
-    if (num_string === "") {
-        return "";
+// Takes either a string or a number
+const clamp = (num) => {
+    const N_CHARS = 15;
+    let num_string = String(num);
+    if (num_string.includes("e+")) {
+        let [a, b] = num_string.split("e+");
+        let digits = N_CHARS - 2 - b.length;
+        return `${a.slice(0, digits)}e+${b}`;
     }
-    const N_DECIMALS = 13;
-    let n = Number(num_string);
-    n = Math.round(n * 10 ** N_DECIMALS) / 10 ** N_DECIMALS;
-    return String(n);
+    else {
+        num_string = num_string.slice(0, N_CHARS);
+        if (num_string.includes(".")) {
+            num_string = num_string.
+        }
+    }
 }
 
 
@@ -30,11 +37,26 @@ let state = {
     _operator: null,
     _display: "",
 
+    reset: function() {
+        this._state = 0;
+        this._n1 = "";
+        this._display = "0";
+    },
+
     // Digit entry
     inputDigit: function(d) {
+        if (d === "0" && this._getCurrentNumber() === "0") {
+            return;
+        }
         this._addDigit(d);
     },
     inputDecimalPoint: function() {
+        if (this._getCurrentNumber() == "") {
+            this._addDigit("0");
+        }
+        if (this._getCurrentNumber().at(-1) == ".") {
+            return;
+        }
         this._addDigit(".");
     },
     _getCurrentNumber: function() {
@@ -72,7 +94,6 @@ let state = {
                 this._state = 0;
                 break;
         }
-        this._updateDisplay();
     },
 
     inputOperator: function(op) {
@@ -115,7 +136,6 @@ let state = {
             this._operator = op;
             this._state = 1;
         }
-        this._updateDisplay();
     },
 
     _setPosNeg: function(op) {
@@ -129,6 +149,7 @@ let state = {
 
     // Display text
     getDisplayText: function() {
+        this._updateDisplay();
         return this._display;
     },
     _updateDisplay: function(text = null) {
@@ -142,11 +163,17 @@ let state = {
                     this._display = `${clamp(this._n1)}`;
                     break;
                 case 1:
-                    this._display = `${clamp(this._n1)} ${this._operator} ${clamp(this._n2)}`;
+                    let op;
+                    switch (this._operator) {
+                        case "+": op = "+"; break;
+                        case "-": op = "-"; break;
+                        case "*": op = String.fromCharCode(215); break;
+                        case "/": op = String.fromCharCode(247); break;
+                    }
+                    this._display = `${clamp(this._n1)} ${op} ${clamp(this._n2)}`;
                     break;
             }
         }
-        //this._display = this._clamp(this._display);
         console.log(this._display);
     },
     _error: function() {
@@ -155,6 +182,8 @@ let state = {
     },
 }
 
+
+state.reset();
 
 let buttons = document.querySelector("#buttons");
 let display = document.querySelector("#display");
@@ -192,7 +221,6 @@ buttons.addEventListener("click", (e) => {
             state.inputOperator("=");
             break;
         default:
-            alert(`No case for button: ${btn} (${typeof btn})`);
             break;
     }
     display.textContent = state.getDisplayText();
