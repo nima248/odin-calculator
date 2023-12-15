@@ -6,6 +6,17 @@ const opDivide = (a, b) => Number(a) / Number(b);
 
 const hasDigits = (string) => /\d/.test(string);
 
+const clamp = (num_string) => {
+    if (num_string === "") {
+        return "";
+    }
+    const N_DECIMALS = 13;
+    let n = Number(num_string);
+    n = Math.round(n * 10 ** N_DECIMALS) / 10 ** N_DECIMALS;
+    return String(n);
+}
+
+
 let state = {
     /* Track digit entry state
      *      -1: error
@@ -117,6 +128,9 @@ let state = {
     },
 
     // Display text
+    getDisplayText: function() {
+        return this._display;
+    },
     _updateDisplay: function(text = null) {
         if (text) {
             this._display = text;
@@ -125,16 +139,16 @@ let state = {
             switch (this._state) {
                 case 0:
                 case 2:
-                    this._display = `${this._n1}`;
+                    this._display = `${clamp(this._n1)}`;
                     break;
                 case 1:
-                    this._display = `${this._n1} ${this._operator} ${this._n2}`;
+                    this._display = `${clamp(this._n1)} ${this._operator} ${clamp(this._n2)}`;
                     break;
             }
         }
+        //this._display = this._clamp(this._display);
         console.log(this._display);
     },
-
     _error: function() {
         this._updateDisplay("Error");
         this._state === -1;
@@ -143,6 +157,7 @@ let state = {
 
 
 let buttons = document.querySelector("#buttons");
+let display = document.querySelector("#display");
 buttons.addEventListener("click", (e) => {
     let btn = e.target.id.replace("btn-", "");
     switch (btn) {
@@ -180,4 +195,5 @@ buttons.addEventListener("click", (e) => {
             alert(`No case for button: ${btn} (${typeof btn})`);
             break;
     }
+    display.textContent = state.getDisplayText();
 });
