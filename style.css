@@ -1,0 +1,49 @@
+:root {
+    --bg: hsl(0, 0%, 10%);
+    --bg-hov: hsl(0, 0%, 30%);
+    --border: hsl(0, 0%, 45%);
+}
+
+#calculator {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+}
+
+#display {
+    height: 80px;
+}
+
+#calculator,
+#display,
+button {
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+}
+
+.row {
+    display: flex;
+}
+
+.row > button {
+    flex: 1 1 25%;
+    font-size: 24px;
+    font-weight: 500;
+    color: ivory;
+    padding: 8px;
+}
+.row > button:hover {
+    background-color: var(--bg-hov);
+}
+
+button.double-width {
+    flex: 2 2 50%;
+}
+
+.row > .btn-op {
+    font-size: 28px;
+    background-color: hsl(37, 80%, 41%);
+}
+.row > .btn-op:hover {
+    background-color: hsl(37, 80%, 31%);
+}
